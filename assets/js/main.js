@@ -1,4 +1,4 @@
-var slides, json;
+var slides, json, speed = 'fast';
 
 Slider = {
    now : '',
@@ -7,18 +7,14 @@ Slider = {
    nextSlide : function(){
       if(this.now < (this.total -1)){
          this.now++;
-         this.loadImage();
+         $(".ativo").fadeOut(speed).removeClass("ativo").next().fadeIn(speed).addClass("ativo");
       }
    },
    prevSlide : function(){
       if(this.now > 0){
          this.now--;
-         this.loadImage();
+         $(".ativo").fadeOut(speed).removeClass("ativo").prev().fadeIn(speed).addClass("ativo");
       }
-   },
-   loadImage : function(){
-      slides.hide();
-      slides[this.now].style.display = 'block';
    },
    loadDOM : function(dados){
       console.log(dados);
@@ -31,6 +27,9 @@ Slider = {
       //Define slider container
       this.slideContainer = $('.slider');
 
+      //Make your slide in the first position
+      this.now = 0;
+
       //Generate images in DOM
       for(var i = 0; i < this.total; i++){
          var img = document.createElement('img');
@@ -39,15 +38,8 @@ Slider = {
          this.slideContainer.append(img);
       }
 
-      //Load slider and images
-      this.slideContainer = $('.slider');
-      slides = Slider.slideContainer.find('img');
-
-      //Make your slide in the first position
-      this.now = 0;
-
-      //Show image
-      this.loadImage();
+      //Load Slider and show the first image
+      $(".slider img:first").fadeIn(speed).addClass("ativo");
    }
 }
 
@@ -65,21 +57,21 @@ function getKey(event){
    }
 }
 
-//Load ressources from Json
-$.ajax({
-   dataType: 'JSON',
-   type: 'GET',
-   url: 'slides.json',
-
-   success: function(data){
-      json = data;
-
-      //Init Slider
-      Slider.init(data);
-    }
-});
-
 jQuery(document).ready(function($) {
+
+   //Load ressources from Json ressource
+   $.ajax({
+      dataType: 'JSON',
+      type: 'GET',
+      url: 'slides.json',
+
+      success: function(data){
+         json = data;
+
+         //Init Slider
+         Slider.init(data);
+       }
+   });
 
    // Navigation by Keyboard
    $(document).keydown(function(event) {
@@ -94,7 +86,8 @@ jQuery(document).ready(function($) {
       switch(command){
          case 'home':
             Slider.now = 0;
-            Slider.loadImage();
+            $(".ativo").removeClass("ativo");
+            $(".slider img:first").fadeIn(speed).addClass("ativo");
             break;
          case 'prev':
             Slider.prevSlide();
